@@ -3,10 +3,10 @@ library(tidyverse)
 library(here)
 
 # data
-df_doctors <- read.csv("/Users/yuyan/Case_Study/df_doctors_v20220321 - df_doctors_v20220321.csv", header = T)
-df_patients <- read.csv("/Users/yuyan/Case_Study/df_patients_v20220321 - df_patients_v20220321.csv", header = T)
-df_sofa_traj <- read.csv("/Users/yuyan/Case_Study/df_traj_v20220321 - df_traj_v20220321.csv", header = T)
-df_eval360 <- read.csv("/Users/yuyan/Case_Study/df_eval360_v20220321 - df_eval360_v20220321.csv", header = T)
+df_doctors <- read.csv("df_doctors_v20220321 - df_doctors_v20220321.csv", header = T)
+df_patients <- read.csv("df_patients_v20220321 - df_patients_v20220321.csv", header = T)
+df_sofa_traj <- read.csv("df_traj_v20220321 - df_traj_v20220321.csv", header = T)
+df_eval360 <- read.csv("df_eval360_v20220321 - df_eval360_v20220321.csv", header = T)
 
 # Check missing
 colSums(is.na(df_doctors))
@@ -46,3 +46,16 @@ df_patients$patient_sex_binary <- ifelse(df_patients$patient_sex == "Male", 1, 0
 # Join datasets
 df_join <- left_join(df_patients, df_doctors, by = "DocID")
 df_join <- inner_join(df_join, df_sofa_traj, by = "PtID")
+
+# rename SOFA in df_join to SOFA_daily, SOFA is from df_sofa_traj originally
+df_join <- df_join %>% rename( SOFA_daily = SOFA)
+
+#write updated csv files
+write_csv(df_doctors,"df_doctors_v20220321 - df_doctors_v20220321_updated.csv")
+write_csv(df_patients,"df_patients_v20220321 - df_patients_v20220321_updated.csv")
+# write.csv(df_sofa_traj,"df_traj_v20220321 - df_traj_v20220321_updated.csv")
+# write.csv(df_eval360,"df_eval360_v20220321 - df_eval360_v20220321_updated.csv")
+
+# write the joined dataset
+write_csv(df_join,"merged_df.csv")
+  
