@@ -39,9 +39,7 @@ df_patients$pri_diag <- as.factor(df_patients$pri_diag)
 
 # convert to Binary Encoding if needed
 df_doctors$physician_sex_binary <- ifelse(df_doctors$physician_sex == "Male", 1, 0)
-
 df_patients$patient_sex_binary <- ifelse(df_patients$patient_sex == "Male", 1, 0)
-
 
 # Join datasets
 df_join <- left_join(df_patients, df_doctors, by = "DocID")
@@ -58,4 +56,41 @@ write_csv(df_patients,"df_patients_v20220321 - df_patients_v20220321_updated.csv
 
 # write the joined dataset
 write_csv(df_join,"merged_df.csv")
-  
+
+# -----------------------------------------------------------------------------------------
+# Victoria's part
+# -----------------------------------------------------------------------------------------
+library(dplyr)
+library(stringr)
+
+# rename SOFA to SOFA_daily 
+df_join <- df_join %>% rename(SOFA_daily = SOFA)
+
+# categorical vars w/ multiple categories 
+icu_dept_map <- data.frame(Category = unique(df_join$icu_dept), Encoded_Value = as.numeric(factor(unique(df_join$icu_dept))))
+pri_diag_map <- data.frame(Category = unique(df_join$pri_diag), Encoded_Value = as.numeric(factor(unique(df_join$pri_diag))))
+domain_map <- data.frame(Category = unique(df_join$domain), Encoded_Value = as.numeric(factor(unique(df_join$domain))))
+
+# character variables to binary (except docID and icu_sites)
+df_join <- df_join %>%
+  mutate(
+    DocID = as.numeric(str_extract(DocID,"\\d+")),  
+    patient_age = ifelse(patient_age == "<60",0,1),
+    admission_response = ifelse(admission_response == "no_op",0,1),
+    patient_sex = ifelse(patient_sex == "M",0,1),
+    discharge_status = ifelse(discharge_status == "A",0,1),
+    icu_sites = ifelse(icu_sites == "1",1,2),
+    leadership_role = ifelse(leadership_role == "leader_x",0,1),
+    physician_rank = ifelse(physician_rank == "junior",0,1),
+    physician_age = ifelse(physician_age == "<50",0,1),
+    physician_sex = ifelse(physician_sex == "M",0,1),
+    
+    # categorical vars
+    icu_dept = as.numeric(factor(icu_dept)),
+    pri_diag = as.numeric(factor(pri_diag)),
+    domain = as.numeric(factor(domain)))
+
+head(df_join)
+
+write.csv(df_join,"merged_data_numeric.csv",row.names=FALSE)
+
