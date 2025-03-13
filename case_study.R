@@ -104,9 +104,6 @@ write.csv(df_join,"merged_data_numeric.csv",row.names=FALSE)
 # -----------------------------------------------------------------------------------------
 library(table1)
 
-
-
-
 #use df_exploratory for exploratory plots and tables (has categorical variables as
 # factors and has variables with labels)
 df_exploratory <- df_join
@@ -166,7 +163,6 @@ table1(~ patient_age +  admission_response  + icu_dept+
         leadership_role +  physician_rank    +  overall_score   +   resident_rank  +
          physician_sex   +   domain   +   physician_age   + 
          day_of_ICU  + SOFA_daily , data = df_exploratory,caption="Overall Exploratory Data")
-
 
 #patient outcomes by physician traits
 table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status|physician_rank, 
