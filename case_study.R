@@ -98,3 +98,105 @@ head(df_join)
 
 write.csv(df_join,"merged_data_numeric.csv",row.names=FALSE)
 
+
+# -----------------------------------------------------------------------------------------
+# rebekah's part - exploratory tables
+# -----------------------------------------------------------------------------------------
+library(table1)
+
+
+
+
+#use df_exploratory for exploratory plots and tables (has categorical variables as
+# factors and has variables with labels)
+df_exploratory <- df_join
+
+#change the labels for categorical variables for visual/display purposes
+df_exploratory$patient_age<-factor(df_exploratory$patient_age,levels=c(0,1),
+                                   labels=c("<60",">=60"))
+df_exploratory$admission_response<-factor(df_exploratory$admission_response,levels=c(0,1),
+                                          labels=c("No rapid response","Rapid response needed"))
+df_exploratory$icu_dept<-factor(df_exploratory$icu_dept,levels=c(1,2,3,4),                                    
+                                labels=c("Medical","Neuro","Surgical","Trauma"))
+df_exploratory$patient_sex <-factor(df_exploratory$patient_sex ,levels=c(0,1),                                   
+                                    labels=c("Male","Female"))
+df_exploratory$discharge_status<-factor(df_exploratory$discharge_status,levels=c(0,1),                          
+                                        labels=c("Alive","Dead"))
+df_exploratory$pri_diag<-factor(df_exploratory$pri_diag,levels=c(1,2,3,4,5),                        
+                                labels=c("Cardivascular","Gastrointestinal","Neuro","Respiratory","Trauma"))
+df_exploratory$icu_sites<-factor(df_exploratory$icu_sites,levels=c(1,2),                            
+                                 labels=c("1","2+"))
+df_exploratory$leadership_role<-factor(df_exploratory$leadership_role,levels=c(0,1),                            
+                                       labels=c("No Role","Leadership Role"))
+df_exploratory$physician_rank<-factor(df_exploratory$physician_rank,levels=c(0,1),                              
+                                     labels=c("Junior","Senior"))
+df_exploratory$physician_sex<-factor(df_exploratory$physician_sex,levels=c(0,1),                                
+                                     labels=c("Male","Female"))
+df_exploratory$domain<-factor(df_exploratory$domain,levels=c(1,2,3,4,5,6),                                    
+                              labels=c("Anesthesia","Emergency","Internal Medicine",
+                                       "Medicine","Neurology","Pulmonary Medicine"))
+df_exploratory$physician_age<-factor(df_exploratory$physician_age,levels=c(0,1),                            
+                                     labels=c("<50","50+"))
+#label the variables
+label(df_exploratory$patient_age)<-"Patient Age"
+label(df_exploratory$admission_response)<-"Admission Response"
+label(df_exploratory$icu_dept)<-"ICU Department"
+label(df_exploratory$charlson_score)<-"Charson comorbidity Score"
+label(df_exploratory$apache_score)<-"APACHE-II Admission score "
+label(df_exploratory$SOFA_admission)<-"SOFA Admission Score"
+label(df_exploratory$discharge_status)<-"Discharge Status"
+label(df_exploratory$patient_sex)<-"Patient Sex"
+label(df_exploratory$ICU_total_stay)<-"ICU length of Stay"
+label(df_exploratory$pri_diag )<-"Primary diagnosis"
+label(df_exploratory$icu_sites )<-"Physician ICU Work Sites"
+label(df_exploratory$leadership_role)<-"Leadership role Present"
+label(df_exploratory$physician_rank)<-"Physician Rank"
+label(df_exploratory$overall_score)<-"Overall Physician Score"
+label(df_exploratory$resident_rank)<-"Resident Evaluation of Physician"
+label(df_exploratory$physician_sex)<-"Physician Sex"
+label(df_exploratory$domain )<-"Physician Training Domain"
+label(df_exploratory$physician_age )<-"Physician Age Group"
+label(df_exploratory$day_of_ICU  )<-"Day of ICU"
+label(df_exploratory$SOFA_daily)<-"Daily SOFA Score"
+
+# Create an exploratory tables using table1
+table1(~ patient_age +  admission_response  + icu_dept+
+        charlson_score   +  apache_score +  SOFA_admission +  patient_sex  +   discharge_status +   
+        ICU_total_stay     +  pri_diag  + icu_sites    +  
+        leadership_role +  physician_rank    +  overall_score   +   resident_rank  +
+         physician_sex   +   domain   +   physician_age   + 
+         day_of_ICU  + SOFA_daily , data = df_exploratory,caption="Overall Exploratory Data")
+
+
+#patient outcomes by physician traits
+table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status|physician_rank, 
+       data=df_exploratory,caption="Patient Outcomes by Physician Rank")
+
+table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status|leadership_role, 
+       data = df_exploratory,caption="Patient Outcomes by Physician Leadership Role")
+
+table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status |physician_sex, 
+       data=df_exploratory,caption="Patient Outcomes by Physician Sex")
+
+table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status |icu_sites, 
+       data=df_exploratory, caption="Patient Outcomes by Physician ICU Sites Worked")
+
+table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status|physician_age, 
+       data=df_exploratory, caption="Patient Outcomes by Physician Age Group")
+
+table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status |domain, 
+       data=df_exploratory, caption="Patient Outcomes by Physician Training Domain")
+
+##extra exploratory tables
+# table1(~overall_score | physician_rank, data=df_exploratory, caption="Physician Rank and Overall Score")
+# 
+# table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status |icu_dept, 
+#        data=df_exploratory, caption="Patient Outcomes by ICU Department")
+# 
+# 
+# plot(df_exploratory$physician_rank,df_exploratory$ICU_total_stay)
+# plot(df_exploratory$physician_rank,df_exploratory$SOFA_admission)
+# plot(df_exploratory$physician_rank,df_exploratory$SOFA_daily)
+
+
+
