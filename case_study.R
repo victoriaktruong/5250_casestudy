@@ -165,23 +165,24 @@ table1(~ patient_age +  admission_response  + icu_dept+
          day_of_ICU  + SOFA_daily , data = df_exploratory,caption="Overall Exploratory Data")
 
 #patient outcomes by physician traits
-table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status|physician_rank, 
-       data=df_exploratory,caption="Patient Outcomes by Physician Rank")
+table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+ pri_diag+admission_response|physician_rank, 
+       data = df_exploratory,caption="Patient Outcomes by Physician Rank")
 
-table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status|leadership_role, 
+table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_diag+admission_response| leadership_role, 
        data = df_exploratory,caption="Patient Outcomes by Physician Leadership Role")
 
-table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status |physician_sex, 
-       data=df_exploratory,caption="Patient Outcomes by Physician Sex")
+table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_diag +admission_response| physician_sex, 
+       data = df_exploratory,caption="Patient Outcomes by Physician Sex")
 
-table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status |icu_sites, 
-       data=df_exploratory, caption="Patient Outcomes by Physician ICU Sites Worked")
+table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status +pri_diag+admission_response| icu_sites, 
+       data = df_exploratory, caption="Patient Outcomes by Physician ICU Sites Worked")
 
-table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status|physician_age, 
-       data=df_exploratory, caption="Patient Outcomes by Physician Age Group")
+table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_diag+admission_response| physician_age, 
+       data = df_exploratory, caption="Patient Outcomes by Physician Age Group")
 
-table1(~ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status |domain, 
-       data=df_exploratory, caption="Patient Outcomes by Physician Training Domain")
+table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_diag +admission_response| domain, 
+       data = df_exploratory, caption="Patient Outcomes by Physician Training Domain")
+
 
 ##extra exploratory tables
 # table1(~overall_score | physician_rank, data=df_exploratory, caption="Physician Rank and Overall Score")
