@@ -130,31 +130,31 @@ df_exploratory$physician_rank<-factor(df_exploratory$physician_rank,levels=c(0,1
 df_exploratory$physician_sex<-factor(df_exploratory$physician_sex,levels=c(0,1),                                
                                      labels=c("Male","Female"))
 df_exploratory$domain<-factor(df_exploratory$domain,levels=c(1,2,3,4,5,6),                                    
-                              labels=c("Anesthesia","Emergency","Internal Medicine",
-                                       "Medicine","Neurology","Pulmonary Medicine"))
+                              labels=c("Anesthesia","Emergency","Internal medicine",
+                                       "Medicine","Neurology","Pulmonary medicine"))
 df_exploratory$physician_age<-factor(df_exploratory$physician_age,levels=c(0,1),                            
                                      labels=c("<50","50+"))
 #label the variables
-label(df_exploratory$patient_age)<-"Patient Age"
-label(df_exploratory$admission_response)<-"Admission Response"
-label(df_exploratory$icu_dept)<-"ICU Department"
-label(df_exploratory$charlson_score)<-"Charson comorbidity Score"
-label(df_exploratory$apache_score)<-"APACHE-II Admission score "
-label(df_exploratory$SOFA_admission)<-"SOFA Admission Score"
-label(df_exploratory$discharge_status)<-"Discharge Status"
-label(df_exploratory$patient_sex)<-"Patient Sex"
-label(df_exploratory$ICU_total_stay)<-"ICU length of Stay"
+label(df_exploratory$patient_age)<-"Patient age"
+label(df_exploratory$admission_response)<-"Admission response"
+label(df_exploratory$icu_dept)<-"ICU department"
+label(df_exploratory$charlson_score)<-"Charlson comorbidity Score"
+label(df_exploratory$apache_score)<-"APACHE-II admission score "
+label(df_exploratory$SOFA_admission)<-"SOFA admission score"
+label(df_exploratory$discharge_status)<-"Discharge status"
+label(df_exploratory$patient_sex)<-"Patient sex"
+label(df_exploratory$ICU_total_stay)<-"ICU length of stay"
 label(df_exploratory$pri_diag )<-"Primary diagnosis"
-label(df_exploratory$icu_sites )<-"Physician ICU Work Sites"
-label(df_exploratory$leadership_role)<-"Leadership role Present"
-label(df_exploratory$physician_rank)<-"Physician Rank"
-label(df_exploratory$overall_score)<-"Overall Physician Score"
-label(df_exploratory$resident_rank)<-"Resident Evaluation of Physician"
-label(df_exploratory$physician_sex)<-"Physician Sex"
-label(df_exploratory$domain )<-"Physician Training Domain"
-label(df_exploratory$physician_age )<-"Physician Age Group"
+label(df_exploratory$icu_sites )<-"Physician ICU work sites"
+label(df_exploratory$leadership_role)<-"Leadership role present"
+label(df_exploratory$physician_rank)<-"Physician rank"
+label(df_exploratory$overall_score)<-"Overall physician score"
+label(df_exploratory$resident_rank)<-"Resident evaluation of physician"
+label(df_exploratory$physician_sex)<-"Physician sex"
+label(df_exploratory$domain )<-"Physician training domain"
+label(df_exploratory$physician_age )<-"Physician age group"
 label(df_exploratory$day_of_ICU  )<-"Day of ICU"
-label(df_exploratory$SOFA_daily)<-"Daily SOFA Score"
+label(df_exploratory$SOFA_daily)<-"Daily SOFA score"
 
 # Create an exploratory tables using table1
 table1(~ patient_age +  admission_response  + icu_dept+
