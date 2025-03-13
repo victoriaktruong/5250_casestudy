@@ -41,9 +41,9 @@ df_patients$patient_sex <- as.factor(df_patients$patient_sex)
 df_patients$discharge_status <- as.factor(df_patients$discharge_status)
 df_patients$pri_diag <- as.factor(df_patients$pri_diag)
 
-# convert to Binary Encoding if needed
-df_doctors$physician_sex_binary <- ifelse(df_doctors$physician_sex == "Male", 1, 0)
-df_patients$patient_sex_binary <- ifelse(df_patients$patient_sex == "Male", 1, 0)
+# convert to Binary Encoding if needed (adding new col)
+# df_doctors$physician_sex_binary <- ifelse(df_doctors$physician_sex == "M", 0, 1)
+# df_patients$patient_sex_binary <- ifelse(df_patients$patient_sex == "M", 0, 1)
 
 # Join datasets
 df_join <- left_join(df_patients, df_doctors, by = "DocID")
