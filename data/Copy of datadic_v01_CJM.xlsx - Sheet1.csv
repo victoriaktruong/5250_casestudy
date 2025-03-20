@@ -1,0 +1,55 @@
+Table,Variable,,,Description,"Notes
+"
+Physician characteristics,"""DocID""","""doc""",,Physician ID,
+,"""M1""","""md_1icu""",,Indicates how many sites is this physician works at,"1  : working at only 1 ICU site 
+2+: working at more than 2 ICU sites."
+,"""M2""","""md_leader""",,Does this physician have a leadership role in the department?,"A physician is categorized into a leadership group (‘leader’) and a non-leadership group (‘leader_x’).  This leadership group includes clinical scientists, educational leaders, and administration leaders."
+,"""M3""","""md_posbin""",,Indicates the rank of a physician (senior/junior),A physician is categorized into a senior group (professors and associate professors) and a junior group (assistant professors and lecturers). 
+,"""M4""","""ov""",,Average overall score from survey in 2016,"This average overall score was collected in 2016. An overall score is a numeric quantity answered to “how do you rate this doctor overall?” The value ranges between 1 and 8, and a higher value shows a favorable rate. "
+,"""M5""","""reseval16_grp""",,Resident evaluation ranking group in 2016,"The physician’s performance was ranked by residents in 2016. Poor, moderate, and good performing groups are marked by the values of 1, 2, and 3.  "
+,"""M6""","""md_sex""",,Sex,Male or Female 
+,"""M7""","""md_train""",,In what domain has the physician received training?,"Emergency, Respiratory, Internal Medicine, Pulmonary, Neurology. "
+,"""M8""","""md_age_ge50""",,Age >= 50,
+,"""M9""","""md_edu""",,Education,"MSC, MED, PhD"
+Patient Characteristics,"""DocID""","""doc""",,Physician ID,
+,"""PtID""","""pt1""",,Patient ID,
+,"""P1""","""age_ge60""",,Age >= 60,"ge60: age >=60
+lt60  : age < 60"
+,"""P2""","""admit_type""",,Was an emergent or rapid response such as an operation needed at admission?,The response is categorized into “emerg” (needed) and “no_op” (not needed).
+,"""P3""","""class_admit""",,To which ICU department was the patient admitted?,"Its value is one of medical, neuro, trauma, and surgical department."
+,"""P4""","""comorb_lvl""",,Charlson comorbidity scoring group,
+,"""P5""","""ap2_admit""",,APACHE-II score at admission,
+,"""P6""","""sofa_admit""",,SOFA score at admission,
+,"""P7""","""sex""",,Sex,Male or Female 
+,"""P8""","""icu_outcome""",,Status at ICU discharge,"A: Alive 
+D: Dead"
+,"""P9""","""icu_los""",,ICU length of stay,"ICU LOS has a floating format (e.g., 7.22 days); however, the only integer part is provided here. "
+,"""P10""","""dx_system""",,What was the primary diagnosis?,"A diagnosis is grouped into cardiovascular, gastrointestinal, neuro, respiratory, and trauma classes"
+SOFA trajectory,"""PtID""","""pt1""",,Patient ID,
+,"""day""","""day""",,Day of ICU stay (limited to 20 days),
+,"""SOFA""","""sofa""",,SOFA score,
+Survey evaluation ,"""Q1""","""me01""",Medical Expert,Functions effectively as a consultant to provide optimal ethical and patient centered medical care,"A survey was distributed to the medical director, patient care manager, unit manager, ICU nurse clinician, ICU nurses, respiratory therapist, social worker, and pharmacist in 2013, 2014, and 2015. The response was recorded on a 5-point Likert scale. A participant is asked to respond 1 (is concerned), 2 (bottom half), 3 (average), 4 (top half), 5 (among best), and NA (unable to answer) to the question “Compared to other physicians I know, this doctor...”"
+,"""Q2""","""me02""",Medical Expert,Demonstrates proficient and appropriate use of procedural skills both diagnostic and therapeutic,
+,"""Q3""","""me03""",Medical Expert,Follows appropriate infection prevention practices and serves as a role model for others,
+,"""Q4""","""ad01""",Advocacy,Responds to individual patient health needs and issues as part of patient care,
+,"""Q5""","""sc01""",Scientific knowledge,Is up to date on current medical knowledge and applies that knowledge in providing patient care and to promote the learning of others,
+,"""Q6""","""pr01""",Professionalism,Is courteous and respectful in interactions including those that are demanding or stressful,
+,"""Q7""","""pr02""",Professionalism,Demonstrates honesty and integrity,
+,"""Q8""","""pr03""",Professionalism,Is approachable and responsive to concerns raised,
+,"""Q9""","""pr04""",Professionalism,Responds to pages and requests in a prompt manner,
+,"""Q10""","""cm01""",Communication,Communicates respectfully with other allied health professionals,
+,"""Q11""","""cm02""",Communication,Provides clear explanations in response to patients and families questions,
+,"""Q12""","""cm03""",Communication,Listens effectively,
+,"""Q13""","""cm04""",Communication,Accepts feedback graciously,
+,"""Q14""","""cm05""",Communication,Provides clear understandable instructions,
+,"""Q15""","""cl01""",Collaboration,Establishes good relationships with peers and other members of the health care team,
+,"""Q16""","""cl02""",Collaboration,Works constructively within the health care team to optimize patient care,
+,"""Q17""","""cl03""",Collaboration,Respects the professional knowledge skills and contributions of other allied health professionals,
+,"""Q18""","""cl04""",Collaboration,Takes responsibilty for actions without blaming others,
+,"""Q19""","""ma01""",Management,Demonstrates strong leadership skills,
+,"""Q20""","""ma02""",Management,Effectively manages the team during acute resuscitation of critically ill patients,
+,"""Q21""","""ma03""",Management,Conducts daily bedside rounds in an efficient manner while still balancing teaching responsibilities,
+,"""Q22""","""ma04""",Management,Makes efficient use of their time to optimize professional performance,
+,"""Q23""","""ov01""",Overall Score,overall score,
+,"""DocID""","""doc""",,Physician who a participant evaluated,
+,"""position""","""pos""",,Participant's position,"A medical director, patient care manager, and unit manager are non-bedside participants."

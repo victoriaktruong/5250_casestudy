@@ -198,6 +198,17 @@ table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_dia
 # -----------------------------------------------------------------------------------------
 # vincent's part 
 # -----------------------------------------------------------------------------------------
+# make the destination proper for github
+#setwd("path/5250_casestudy/data") 
+#setwd("D:/_uoft_1/5 master 1/chl5250/5250_casestudy/data") 
+#df_doctors <- read.csv("df_doctors_v20220321 - df_doctors_v20220321.csv", header = TRUE) "<- example"
+
+#write updated csv files
+write_csv(df_doctors,"df_doctors_updated.csv")
+write_csv(df_patients,"df_patients_updated.csv")
+write.csv(df_sofa_traj,"df_traj_updated.csv")
+write.csv(df_eval360,"df_eval360_updated.csv")
+
 # check unique
 df_join <- df_join %>% distinct()
 
