@@ -46,11 +46,11 @@ df_patients$pri_diag <- as.factor(df_patients$pri_diag)
 # df_patients$patient_sex_binary <- ifelse(df_patients$patient_sex == "M", 0, 1)
 
 # Join datasets
-df_join <- left_join(df_patients, df_doctors, by = "DocID")
-df_join <- inner_join(df_join, df_sofa_traj, by = "PtID")
-
-# rename SOFA in df_join to SOFA_daily, SOFA is from df_sofa_traj originally
-df_join <- df_join %>% rename( SOFA_daily = SOFA)
+  df_join <- left_join(df_patients, df_doctors, by = "DocID")
+  df_join <- inner_join(df_join, df_sofa_traj, by = "PtID")
+  
+  # rename SOFA in df_join to SOFA_daily, SOFA is from df_sofa_traj originally
+  df_join <- df_join %>% rename( SOFA_daily = SOFA)
 
 #write updated csv files
 write_csv(df_doctors,"df_doctors_v20220321 - df_doctors_v20220321_updated.csv")
@@ -198,19 +198,29 @@ table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_dia
 # -----------------------------------------------------------------------------------------
 # vincent's part 
 # -----------------------------------------------------------------------------------------
-# make the destination proper for github
-#setwd("path/5250_casestudy/data") 
-#setwd("D:/_uoft_1/5 master 1/chl5250/5250_casestudy/data") 
-#df_doctors <- read.csv("df_doctors_v20220321 - df_doctors_v20220321.csv", header = TRUE) "<- example"
+# make the destination and code proper for github
+#setwd("path/5250_casestudy") 
+setwd("D:/_uoft_1/5 master 1/chl5250/5250_casestudy") #this is mine
 
-#write updated csv files
-write_csv(df_doctors,"df_doctors_updated.csv")
-write_csv(df_patients,"df_patients_updated.csv")
-write.csv(df_sofa_traj,"df_traj_updated.csv")
-write.csv(df_eval360,"df_eval360_updated.csv")
-
+df_doctors <- read.csv("data/df_doctors_v20220321 - df_doctors_v20220321.csv", header = T) 
+df_patients <- read.csv("data/df_patients_v20220321 - df_patients_v20220321.csv", header = T)
+df_sofa_traj <- read.csv("data/df_traj_v20220321 - df_traj_v20220321.csv", header = T)
+df_eval360 <- read.csv("data/df_eval360_v20220321 - df_eval360_v20220321.csv", header = T)
+#process by Yu's code and write updated csv files
+write_csv(df_doctors,"data/df_doctors_updated.csv")
+write_csv(df_patients,"data/df_patients_updated.csv")
+write.csv(df_sofa_traj,"data/df_traj_updated.csv")
+write.csv(df_eval360,"data/df_eval360_updated.csv")
+write_csv(df_join,"data/merged_df.csv")
 # check unique
 df_join <- df_join %>% distinct()
+
+library(ggcorrplot)
+corr_matrix <- cor(df_join %>% select_if(is.numeric), use = "complete.obs")
+ggcorrplot(corr_matrix, hc.order = TRUE, type = "lower", lab = TRUE)
+
+
+
 
 
 
