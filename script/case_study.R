@@ -67,9 +67,6 @@ write_csv(df_join,"merged_df.csv")
 library(dplyr)
 library(stringr)
 
-# rename SOFA to SOFA_daily 
-df_join <- df_join %>% rename(SOFA_daily = SOFA)
-
 # categorical vars w/ multiple categories 
 icu_dept_map <- data.frame(Category = unique(df_join$icu_dept), Encoded_Value = as.numeric(factor(unique(df_join$icu_dept))))
 pri_diag_map <- data.frame(Category = unique(df_join$pri_diag), Encoded_Value = as.numeric(factor(unique(df_join$pri_diag))))
