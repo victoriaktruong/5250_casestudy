@@ -1,4 +1,51 @@
 # -----------------------------------------------------------------------------------------
+# vincent's part 
+# -----------------------------------------------------------------------------------------
+# make the destination and code proper for github
+#setwd("path/5250_casestudy") 
+setwd("D:/_uoft_1/5 master 1/chl5250/5250_casestudy") #this is mine
+
+#directly downloaded data from https://ssc.ca/en/case-study/developing-a-physician-performance-model-critical-care-assessing-quality-and-value
+df_doctors <- read.csv("data/df_doctors_v20220321 - df_doctors_v20220321.csv", header = T) 
+df_patients <- read.csv("data/df_patients_v20220321 - df_patients_v20220321.csv", header = T)
+df_sofa_traj <- read.csv("data/df_traj_v20220321 - df_traj_v20220321.csv", header = T)
+df_eval360 <- read.csv("data/df_eval360_v20220321 - df_eval360_v20220321.csv", header = T)
+df_patients <- df_patients %>%
+  rename(
+    patient_age = P1,
+    admission_response = P2,
+    icu_dept = P3,
+    charlson_score = P4,
+    apache_score = P5,
+    SOFA = P6,
+    patient_sex = P7,
+    discharge_status = P8,
+    ICU_total_stay = P9,
+    pri_diag = P10
+  )
+df_doctors <- df_doctors %>%
+  rename(
+    icu_sites = M1,
+    leadership_role = M2,
+    physician_rank = M3,
+    overall_score = M4,
+    resident_rank = M5,
+    physician_sex = M6,
+    domain = M7,
+    physician_age = M8,
+    M9 = M9  # Keeping M9 unchanged if needed
+  )
+df_eval360 <-df_eval360%>%
+  rename(day_of_ICU = day)
+
+# check unique
+#df_join <- df_join %>% distinct()
+
+#check correlation, not sure wt the main factor..
+#library(ggcorrplot)
+#corr_matrix <- cor(df_join %>% select_if(is.numeric), use = "complete.obs")
+#ggcorrplot(corr_matrix, hc.order = TRUE, type = "lower", lab = TRUE)
+# -----------------------------------------------------------------------------------------
 # Yu Yan's part
 # -----------------------------------------------------------------------------------------
 
@@ -7,10 +54,10 @@ library(tidyverse)
 library(here)
 
 # data
-df_doctors <- read.csv("df_doctors_v20220321 - df_doctors_v20220321.csv", header = T)
-df_patients <- read.csv("df_patients_v20220321 - df_patients_v20220321.csv", header = T)
-df_sofa_traj <- read.csv("df_traj_v20220321 - df_traj_v20220321.csv", header = T)
-df_eval360 <- read.csv("df_eval360_v20220321 - df_eval360_v20220321.csv", header = T)
+#df_doctors <- read.csv("df_doctors_v20220321 - df_doctors_v20220321.csv", header = T)
+#df_patients <- read.csv("df_patients_v20220321 - df_patients_v20220321.csv", header = T)
+#df_sofa_traj <- read.csv("df_traj_v20220321 - df_traj_v20220321.csv", header = T)
+#df_eval360 <- read.csv("df_eval360_v20220321 - df_eval360_v20220321.csv", header = T)
 
 # Check missing
 colSums(is.na(df_doctors))
@@ -46,18 +93,24 @@ df_patients$pri_diag <- as.factor(df_patients$pri_diag)
 # df_patients$patient_sex_binary <- ifelse(df_patients$patient_sex == "M", 0, 1)
 
 # Join datasets
-  df_join <- left_join(df_patients, df_doctors, by = "DocID")
-  df_join <- inner_join(df_join, df_sofa_traj, by = "PtID")
+df_join <- left_join(df_patients, df_doctors, by = "DocID")
+df_join <- inner_join(df_join, df_sofa_traj, by = "PtID")
   
-  # rename SOFA in df_join to SOFA_daily, SOFA is from df_sofa_traj originally
-  df_join <- df_join %>% rename( SOFA_daily = SOFA)
+# rename SOFA in df_join to SOFA_daily, SOFA is from df_sofa_traj originally
+df_join <- df_join %>% rename( SOFA_daily = SOFA)
 
 #write updated csv files
-write_csv(df_doctors,"df_doctors_v20220321 - df_doctors_v20220321_updated.csv")
-write_csv(df_patients,"df_patients_v20220321 - df_patients_v20220321_updated.csv")
+#write_csv(df_doctors,"df_doctors_v20220321 - df_doctors_v20220321_updated.csv")
+#write_csv(df_patients,"df_patients_v20220321 - df_patients_v20220321_updated.csv")
 # write.csv(df_sofa_traj,"df_traj_v20220321 - df_traj_v20220321_updated.csv")
 # write.csv(df_eval360,"df_eval360_v20220321 - df_eval360_v20220321_updated.csv")
 
+#process from Yu's code and write updated csv files by vincent
+write_csv(df_doctors,"data/df_doctors_updated.csv")
+write_csv(df_patients,"data/df_patients_updated.csv")
+write.csv(df_sofa_traj,"data/df_traj_updated.csv")
+write.csv(df_eval360,"data/df_eval360_updated.csv")
+write_csv(df_join,"data/merged_df.csv")
 # write the joined dataset
 write_csv(df_join,"merged_df.csv")
 
@@ -195,29 +248,11 @@ table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_dia
 # plot(df_exploratory$physician_rank,df_exploratory$SOFA_admission)
 # plot(df_exploratory$physician_rank,df_exploratory$SOFA_daily)
 
-# -----------------------------------------------------------------------------------------
-# vincent's part 
-# -----------------------------------------------------------------------------------------
-# make the destination and code proper for github
-#setwd("path/5250_casestudy") 
-setwd("D:/_uoft_1/5 master 1/chl5250/5250_casestudy") #this is mine
 
-df_doctors <- read.csv("data/df_doctors_v20220321 - df_doctors_v20220321.csv", header = T) 
-df_patients <- read.csv("data/df_patients_v20220321 - df_patients_v20220321.csv", header = T)
-df_sofa_traj <- read.csv("data/df_traj_v20220321 - df_traj_v20220321.csv", header = T)
-df_eval360 <- read.csv("data/df_eval360_v20220321 - df_eval360_v20220321.csv", header = T)
-#process by Yu's code and write updated csv files
-write_csv(df_doctors,"data/df_doctors_updated.csv")
-write_csv(df_patients,"data/df_patients_updated.csv")
-write.csv(df_sofa_traj,"data/df_traj_updated.csv")
-write.csv(df_eval360,"data/df_eval360_updated.csv")
-write_csv(df_join,"data/merged_df.csv")
-# check unique
-df_join <- df_join %>% distinct()
 
-library(ggcorrplot)
-corr_matrix <- cor(df_join %>% select_if(is.numeric), use = "complete.obs")
-ggcorrplot(corr_matrix, hc.order = TRUE, type = "lower", lab = TRUE)
+
+
+
 
 
 
