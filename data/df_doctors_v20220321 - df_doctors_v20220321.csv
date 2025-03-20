@@ -1,0 +1,26 @@
+DocID,M1,M2,M3,M4,M5,M6,M7,M8,M9
+doc-01,2+,leader_x,senior,4.033300671,2,F,anesthesia,50+,
+doc-02,2+,leader_x,senior,4.483526579,2,M,internal medicine,50+,MSc
+doc-03,2+,leader_x,junior,4.256743005,2,F,pulmonary medicine,<50,PhD
+doc-04,1,leader,junior,4.175182225,3,F,emergency,<50,
+doc-05,1,leader_x,junior,5.61084467,1,M,internal medicine,50+,MMed
+doc-06,2+,leader,senior,5.737756323,2,M,medicine,50+,MSc
+doc-07,1,leader_x,junior,5.18685225,2,M,internal medicine,<50,
+doc-08,1,leader_x,senior,4.240653378,2,F,pulmonary medicine,<50,
+doc-09,1,leader_x,junior,3.995117568,2,F,internal medicine,50+,
+doc-10,1,leader_x,junior,4.726975209,3,M,internal medicine,50+,
+doc-11,1,leader,senior,2.845029252,2,M,internal medicine,50+,
+doc-12,2+,leader,senior,4.857068164,2,F,internal medicine,<50,
+doc-13,2+,leader,junior,6.094835955,3,M,internal medicine,50+,MSc
+doc-14,1,leader,senior,3.778843585,2,M,emergency,50+,MSc
+doc-15,1,leader,senior,6.52607487,3,F,neurology,<50,MSc
+doc-16,1,leader,junior,2.316098142,2,F,emergency,50+,MMed
+doc-17,1,leader,senior,4.521185445,1,F,medicine,50+,MMed
+doc-18,1,leader,junior,3.460971979,3,F,emergency,50+,MSc
+doc-19,1,leader,junior,3.982599614,3,F,pulmonary medicine,50+,
+doc-20,2+,leader_x,senior,3.593013513,3,M,internal medicine,50+,
+doc-21,2+,leader_x,junior,5.730349954,2,M,medicine,50+,
+doc-22,2+,leader_x,senior,4.796275974,3,M,internal medicine,50+,
+doc-23,2+,leader,junior,5.431024314,2,M,internal medicine,50+,
+doc-24,1,leader_x,senior,4.2037651,3,M,anesthesia,50+,
+doc-25,1,leader_x,junior,6.936098893,2,M,internal medicine,50+,
