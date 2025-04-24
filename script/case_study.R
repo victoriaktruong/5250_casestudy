@@ -1,6 +1,8 @@
 # -----------------------------------------------------------------------------------------
 # vincent's part 
 # -----------------------------------------------------------------------------------------
+library(tidyverse)
+library(here)
 # make the destination and code proper for github
 #setwd("path/5250_casestudy") 
 setwd("D:/_uoft_1/5 master 1/chl5250/5250_casestudy") #this is mine
@@ -35,16 +37,13 @@ df_doctors <- df_doctors %>%
     physician_age = M8,
     M9 = M9  # Keeping M9 unchanged if needed
   )
-df_eval360 <-df_eval360%>%
+df_sofa_traj <-df_sofa_traj%>%
   rename(day_of_ICU = day)
 
 # check unique
 #df_join <- df_join %>% distinct()
 
-#check correlation, not sure wt the main factor..
-#library(ggcorrplot)
-#corr_matrix <- cor(df_join %>% select_if(is.numeric), use = "complete.obs")
-#ggcorrplot(corr_matrix, hc.order = TRUE, type = "lower", lab = TRUE)
+
 # -----------------------------------------------------------------------------------------
 # Yu Yan's part
 # -----------------------------------------------------------------------------------------
@@ -246,8 +245,103 @@ table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_dia
 # plot(df_exploratory$physician_rank,df_exploratory$SOFA_daily)
 
 
+# -----------------------------------------------------------------------------------------
+# Analysis: vincent's part 
+# -----------------------------------------------------------------------------------------
+# Load Required Libraries
+# -----------------------------
+library(survival)     # Survival analysis (Cox model, Surv objects)
+library(survminer)    # Plotting survival curves
+
+# -----------------------------
+# A. Survival Analysis
+# -----------------------------
+a_data <- df_join %>%
+  mutate(
+    pri_diag     = factor(pri_diag),
+    domain = factor(domain)
+  )
+cox_mod <- coxph(
+  Surv(ICU_total_stay, discharge_status) ~ pri_diag
+  + domain
+  + admission_response,
+  data = a_data
+)
+summary(cox_mod)
+
+# 12345 cardiovascular, gastrointestinal, neuro, respiratory, and trauma classes
+km_diag <- survfit(Surv(ICU_total_stay, discharge_status) ~ pri_diag, data = a_data)
+ggsurvplot(
+  km_diag,
+  data       = a_data,
+  pval       = TRUE,
+  risk.table = TRUE,
+  title      = "Survival Curves by Primary Diagnosis",
+  xlab       = "Time (days)",
+  ylab       = "Survival Probability"
+)
+
+# 1213456 Emergency, Respiratory, Internal Medicine, Pulmonary, Neurology. 
+km_domain <- survfit(Surv(ICU_total_stay, discharge_status) ~ domain, data = a_data)
+ggsurvplot(
+  km_domain,
+  data       = a_data,
+  pval       = TRUE,
+  risk.table = TRUE,
+  title      = "Survival Curves by Physician Domain",
+  xlab       = "Time (days)",
+  ylab       = "Survival Probability"
+)
+# -----------------------------
+# B. Correlation Analysis
+# -----------------------------
+corr_data <- df_join %>%
+  select(apache_score, SOFA_admission, charlson_score, ICU_total_stay, admission_response)
+
+cov(corr_data)
+cor(corr_data)
 
 
+# -----------------------------
+# 2. Survival Analysis
+# -----------------------------
+# Assume that 'time' is ICU length in days and 'status' indicates the event.
+cox_model <- coxph(Surv(ICU_total_stay, discharge_status) ~ apache_score + SOFA_admission + charlson_score + admission_response, data = df_join)
+summary(cox_model)
+
+ph_test <- cox.zph(cox_model)
+print(ph_test)
+
+# mutated based on the median value.
+sv_data <- df_join %>%
+  mutate(APACHEII_group = ifelse(apache_score >= median(apache_score, na.rm = TRUE), "High", "Low"),
+         SOFA_admission_group = ifelse(SOFA_admission >= median(SOFA_admission, na.rm = TRUE), "High", "Low"),
+         charlson_score_group = ifelse(charlson_score >= median(charlson_score, na.rm = TRUE), "High", "Low"))
+
+km_fit_APACHEII <- survfit(Surv(ICU_total_stay, discharge_status) ~ APACHEII_group, data = sv_data)
+
+# Plot the survival curves with risk tables and p-value.
+ggsurvplot(km_fit_APACHEII, 
+           data = sv_data, 
+           pval = TRUE, 
+           risk.table = TRUE, 
+           title = "Survival Curves by APACHEII Group")
+
+km_fit_SOFA <- survfit(Surv(ICU_total_stay, discharge_status) ~ SOFA_admission_group, data = sv_data)
+
+ggsurvplot(km_fit_SOFA, 
+           data = sv_data, 
+           pval = TRUE, 
+           risk.table = TRUE, 
+           title = "Survival Curves by SOFA Group")
+
+km_fit_charlson <- survfit(Surv(ICU_total_stay, discharge_status) ~ charlson_score_group, data = sv_data)
+
+ggsurvplot(km_fit_charlson, 
+           data = sv_data, 
+           pval = TRUE, 
+           risk.table = TRUE, 
+           title = "Survival Curves by charlson Group")
 
 
 
