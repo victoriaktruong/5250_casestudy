@@ -128,7 +128,7 @@ domain_map <- data.frame(Category = unique(df_join$domain), Encoded_Value = as.n
 df_join <- df_join %>%
   mutate(
     DocID = as.numeric(str_extract(DocID,"\\d+")),  
-    patient_age = ifelse(patient_age == "<60",0,1),
+    patient_age = ifelse(patient_age == "<lt60",0,1),
     admission_response = ifelse(admission_response == "no_op",0,1),
     patient_sex = ifelse(patient_sex == "M",0,1),
     discharge_status = ifelse(discharge_status == "A",0,1),
@@ -342,6 +342,56 @@ ggsurvplot(km_fit_charlson,
            pval = TRUE, 
            risk.table = TRUE, 
            title = "Survival Curves by charlson Group")
+
+# -----------------------------------------------------------------------------------------
+# Analysis: rebekah's part - logistic regression
+# -----------------------------------------------------------------------------------------
+
+#discharge status 0=alive 1=dead
+#fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
+log_model<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role,data=df_exploratory,family=binomial)
+
+#summary of model
+summary(log_model)
+
+#95% Wald CI and OR estimate
+coefs_lr<-coef(log_model)
+se_lr<-summary(log_model)$coefficients[,'Std. Error']
+lower_lr<-coefs_lr-1.96*se_lr
+upper_lr<-coefs_lr+1.96*se_lr
+lr_model<-data.frame(Odds_Ratio = round(exp(coefs_lr),4),
+                     Lower_CI=round(exp(lower_lr),4), 
+                     Upper_CI=round(exp(upper_lr),4))
+#display odds ratios and CI
+lr_model
+
+# Gastro intestinal patients had 2.55 times higher odds of death compared to cardiovascular patients. Neuro has 2.47 times higher odds of death compared to cardiovascular patients. Respiratory primary diagnosis has the highest odds of death comparing other diagnosis. Trauma patients have a 1.7 times higher odds of death vs cardiovascular. 
+# Patients with a rapid response needed at admission had 48% higher odds of death compared to patients with no rapid response needed. 
+# ICU Neuro department had not statistically significant odds of death, suggesting that the neuro and medical icu have similar odds of death. Surgical had the highest odds of death (1.52 times) compared to the medical icu. ICU trauma patients also had an increase in odds of death compared to medical.
+# 
+# Patients older than 60 had a16% higher odds of death compared to those < 60.
+# An increase in SOFA score by 1 point at admission increases odds of death by 11%. An increase in APACHE II score by 1 point increases the odds of death by 19%. The Charlson score increase reduced odds of death by 0.13. Female patients have 1.11 times higher odds of death.
+# Patients under physicians with a leadership role have 61% lower odds of death
+
+
+
+
+
+#how well model discriminates between patients that are alive (=0) or dead (=1)
+library(pROC)
+#prediction
+pred_lr<-predict(log_model, type = "response")
+#roc and plot it
+roc_lr<-roc(df_exploratory$discharge_status,pred_lr)
+plot(roc_lr, main="ROC Curve",col="black")
+#display auc val
+auc(roc_lr)
+#AUC value of 0.70+ so we have good discrimination
+
+#checking multicollinearity in logistic model
+library(car)
+vif(log_model)
+#all VIFs are well below 5, so no concerns of multicollinearity
 
 
 
