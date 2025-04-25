@@ -395,7 +395,7 @@ vif(log_model)
 # -----------------------------------------------------------------------------------------
 # STEP 1: Aggregate patient outcomes per physician
 
-df_patient_agg <- read.csv("cluster_data.csv")
+df_join <- read.csv(""merged_data_numeric.csv"")
 
 df_patient_agg <- df_join %>%
   group_by(DocID) %>%
@@ -471,7 +471,7 @@ library(factoextra)
 fviz_nbclust(scale(feedback_vars), kmeans, method = "wss") +
   labs(title = "Elbow Method for Optimal k")
 set.seed(1)
-k_result <- kmeans(scale(feedback_vars), centers = 5, nstart = 10)
+k_result <- kmeans(scale(feedback_vars), centers = 6, nstart = 10)
 
 # Add cluster labels
 cluster_data$cluster <- as.factor(k_result$cluster)
@@ -494,8 +494,6 @@ cluster_data %>%
   labs(title = "Cluster Profiles: Feedback & Outcomes")
 
 
-# doc-22&23
-cluster_2 <- cluster_data %>% filter(cluster == 2)
 
 
 
