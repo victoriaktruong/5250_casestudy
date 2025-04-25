@@ -3,9 +3,6 @@
 # -----------------------------------------------------------------------------------------
 library(tidyverse)
 library(here)
-# make the destination and code proper for github
-#setwd("path/5250_casestudy") 
-setwd("D:/_uoft_1/5 master 1/chl5250/5250_casestudy") #this is mine
 
 #directly downloaded data from https://ssc.ca/en/case-study/developing-a-physician-performance-model-critical-care-assessing-quality-and-value
 df_doctors <- read.csv("data/df_doctors_v20220321 - df_doctors_v20220321.csv", header = T) 
@@ -397,6 +394,9 @@ vif(log_model)
 # Yu's part : Join df_eval360 & K-means clustering 
 # -----------------------------------------------------------------------------------------
 # STEP 1: Aggregate patient outcomes per physician
+
+df_patient_agg <- read.csv("cluster_data.csv")
+
 df_patient_agg <- df_join %>%
   group_by(DocID) %>%
   summarize(
