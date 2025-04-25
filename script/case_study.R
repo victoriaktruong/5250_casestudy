@@ -397,7 +397,7 @@ vif(log_model)
 # Yu's part : Join df_eval360 & K-means clustering 
 # -----------------------------------------------------------------------------------------
 # STEP 1: Aggregate patient outcomes per physician
-df_patient_agg <- df_join_num %>%
+df_patient_agg <- df_join %>%
   group_by(DocID) %>%
   summarize(
     n_patients = n(),
