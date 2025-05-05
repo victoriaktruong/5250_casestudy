@@ -372,25 +372,25 @@ km_fit_APACHEII <- survfit(Surv(ICU_total_stay, discharge_status) ~ APACHEII_gro
 # Plot the survival curves with risk tables and p-value.
 ggsurvplot(km_fit_APACHEII, 
            data = sv_data, 
-           pval = TRUE, 
+           pval = FALSE, 
            risk.table = TRUE, 
            title = "Survival Curves by APACHEII Group",  xlab = "Time (days)",
            ylab = "Survival Probability",
            legend.title = "APACHE-II Group",
-           legend.labs = c("Low", "Moderate", "High", "Very High")  # clean labels
+           legend.labs = c("Low (apache \u2264 10)", "Moderate (10 < apache \u2264 20)", "High (20 < apache \u2264 30)", "Very High (apache > 30)")  # clean labels
 )
 
 km_fit_SOFA <- survfit(Surv(ICU_total_stay, discharge_status) ~ SOFA_admission_group, data = sv_data)
 
 ggsurvplot(km_fit_SOFA, 
            data = sv_data, 
-           pval = TRUE, 
+           pval = FALSE, 
            risk.table = TRUE, 
            title = "Survival Curves by SOFA Group",
            xlab = "Time (days)",
            ylab = "Survival Probability",
            legend.title = "SOFA Group",
-           legend.labs = c("Low",  "High")  # clean labels
+           legend.labs = c("Low (SOFA \u2264 12) ",  "High (SOFA > 12)")  # clean labels
 )
 
 km_fit_charlson <- survfit(Surv(ICU_total_stay, discharge_status) ~ charlson_score_group, data = sv_data)
