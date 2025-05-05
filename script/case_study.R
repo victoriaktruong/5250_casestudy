@@ -269,6 +269,25 @@ cox_mod <- coxph(
 )
 summary(cox_mod)
 
+# 1) Recode numeric codes → factor labels
+a_data <- a_data %>%
+  mutate(
+    pri_diag = factor(pri_diag,
+                      levels = 1:5,
+                      labels = c("Cardiovascular",
+                                 "Gastrointestinal",
+                                 "Neurological",
+                                 "Respiratory",
+                                 "Trauma")),
+    domain = factor(domain,
+                    levels = 1:6,
+                    labels = c("Emergency",
+                               "Respiratory",
+                               "Internal Medicine",
+                               "Pulmonary",
+                               "Neurology",
+                               "Other"))
+  )
 # 12345 cardiovascular, gastrointestinal, neuro, respiratory, and trauma classes
 km_diag <- survfit(Surv(ICU_total_stay, discharge_status) ~ pri_diag, data = a_data)
 ggsurvplot(
@@ -337,11 +356,48 @@ ggsurvplot(km_fit_SOFA,
 
 km_fit_charlson <- survfit(Surv(ICU_total_stay, discharge_status) ~ charlson_score_group, data = sv_data)
 
-ggsurvplot(km_fit_charlson, 
+# by the defination from google
+sv_data <- df_join %>%
+  mutate(APACHEII_group = cut(apache_score,
+                              breaks = c(-Inf, 10, 20, 30, Inf),
+                              labels = c("Low", "Moderate", "High", "Very High")))
+sv_data <- sv_data %>%
+  mutate(SOFA_admission_group = cut(SOFA_admission,
+                                    breaks = c(-Inf,12, Inf),
+                                    labels = c("Low", "High")))
+
+
+km_fit_APACHEII <- survfit(Surv(ICU_total_stay, discharge_status) ~ APACHEII_group, data = sv_data)
+
+# Plot the survival curves with risk tables and p-value.
+ggsurvplot(km_fit_APACHEII, 
            data = sv_data, 
            pval = TRUE, 
            risk.table = TRUE, 
-           title = "Survival Curves by charlson Group")
+           title = "Survival Curves by APACHEII Group",  xlab = "Time (days)",
+           ylab = "Survival Probability",
+           legend.title = "APACHE-II Group",
+           legend.labs = c("Low", "Moderate", "High", "Very High")  # clean labels
+)
+
+km_fit_SOFA <- survfit(Surv(ICU_total_stay, discharge_status) ~ SOFA_admission_group, data = sv_data)
+
+ggsurvplot(km_fit_SOFA, 
+           data = sv_data, 
+           pval = TRUE, 
+           risk.table = TRUE, 
+           title = "Survival Curves by SOFA Group",
+           xlab = "Time (days)",
+           ylab = "Survival Probability",
+           legend.title = "SOFA Group",
+           legend.labs = c("Low",  "High")  # clean labels
+)
+
+km_fit_charlson <- survfit(Surv(ICU_total_stay, discharge_status) ~ charlson_score_group, data = sv_data)
+"ggsurvplot(km_fit_charlson, 
+           data = sv_data, 
+           pval = TRUE, 
+           risk.table = TRUE)"
 
 # -----------------------------------------------------------------------------------------
 # Analysis: rebekah's part - logistic regression
@@ -392,6 +448,39 @@ auc(roc_lr)
 library(car)
 vif(log_model)
 #all VIFs are well below 5, so no concerns of multicollinearity
+
+#icu_dept:physician_rank yes
+#icu_dept:pri_diag yes
+#patient_age:SOFA_admission no
+#patient_sex:physician_sex
+#senior physicians perform differently in different ICU environments (e.g., Surgical vs Medical ICUs)
+#discharge status 0=alive 1=dead
+#fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
+log_model2<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+icu_dept:physician_rank,data=df_exploratory,family=binomial)
+
+#summary of model
+summary(log_model2)
+
+#95% Wald CI and OR estimate
+coefs_lr2<-coef(log_model2)
+se_lr2<-summary(log_model2)$coefficients[,'Std. Error']
+lower_lr2<-coefs_lr2-1.96*se_lr2
+upper_lr2<-coefs_lr2+1.96*se_lr2
+lr_model2<-data.frame(Odds_Ratio = round(exp(coefs_lr2),4),
+                      Lower_CI=round(exp(lower_lr2),4), 
+                      Upper_CI=round(exp(upper_lr2),4))
+#display odds ratios and CI
+lr_model2
+
+anova(log_model, log_model2, test = "Chisq")
+
+
+#no clear difference in patient odds of death between senior and junior physicians in the Neuro ICU relative to the medical ICU
+# patients in the surgical ICU treated by senior physicians had 24% lower odds of death compared to those treated 
+# by junior physicians relative to the medical ICU
+# patients in the trauma icu treated by senior physicians had 42% lower odds of death than those treated by junior physicians relative to the medical ICU
+
+
 
 # -----------------------------------------------------------------------------------------
 # Yu's part : Join df_eval360 & K-means clustering 
