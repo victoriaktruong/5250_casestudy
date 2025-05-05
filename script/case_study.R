@@ -416,10 +416,10 @@ lr_model2
 anova(log_model, log_model2, test = "Chisq")
 
 
-#no clear difference in patient odds of death between senior and junior physicians in the Neuro ICU
+#no clear difference in patient odds of death between senior and junior physicians in the Neuro ICU relative to the medical ICU
 # patients in the surgical ICU treated by senior physicians had 24% lower odds of death compared to those treated 
-# by junior physicians
-# patients in the trauma icu treated by senior physicians had 42% lower odds of death than those treated by junior physicians
+# by junior physicians relative to the medical ICU
+# patients in the trauma icu treated by senior physicians had 42% lower odds of death than those treated by junior physicians relative to the medical ICU
 
 
 
