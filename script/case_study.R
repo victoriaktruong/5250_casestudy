@@ -390,6 +390,39 @@ library(car)
 vif(log_model)
 #all VIFs are well below 5, so no concerns of multicollinearity
 
+#icu_dept:physician_rank yes
+#icu_dept:pri_diag yes
+#patient_age:SOFA_admission no
+#patient_sex:physician_sex
+#senior physicians perform differently in different ICU environments (e.g., Surgical vs Medical ICUs)
+#discharge status 0=alive 1=dead
+#fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
+log_model2<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+icu_dept:physician_rank,data=df_exploratory,family=binomial)
+
+#summary of model
+summary(log_model2)
+
+#95% Wald CI and OR estimate
+coefs_lr2<-coef(log_model2)
+se_lr2<-summary(log_model2)$coefficients[,'Std. Error']
+lower_lr2<-coefs_lr2-1.96*se_lr2
+upper_lr2<-coefs_lr2+1.96*se_lr2
+lr_model2<-data.frame(Odds_Ratio = round(exp(coefs_lr2),4),
+                     Lower_CI=round(exp(lower_lr2),4), 
+                     Upper_CI=round(exp(upper_lr2),4))
+#display odds ratios and CI
+lr_model2
+
+anova(log_model, log_model2, test = "Chisq")
+
+
+#no clear difference in patient odds of death between senior and junior physicians in the Neuro ICU
+# patients in the surgical ICU treated by senior physicians had 24% lower odds of death compared to those treated 
+# by junior physicians
+# patients in the trauma icu treated by senior physicians had 42% lower odds of death than those treated by junior physicians
+
+
+
 # -----------------------------------------------------------------------------------------
 # Yu's part : Join df_eval360 & K-means clustering 
 # -----------------------------------------------------------------------------------------
