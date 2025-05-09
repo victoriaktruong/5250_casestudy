@@ -477,23 +477,9 @@ vif(log_model2)
 
 
 # -----------------------------------------------------------------------------------------
-# Yu's part : Join df_eval360 & K-means clustering 
+# Yu's part : Join df_eval360 & Random Forest 
 # -----------------------------------------------------------------------------------------
-# STEP 1: Aggregate patient outcomes per physician
-df_patient_agg <- df_join_num %>%
-  group_by(DocID) %>%
-  summarize(
-    n_patients = n(),
-    mortality_rate = mean(discharge_status == 1, na.rm = TRUE),
-    avg_los = mean(ICU_total_stay, na.rm = TRUE),
-    avg_apache = mean(apache_score, na.rm = TRUE),
-    avg_sofa = mean(SOFA_admission, na.rm = TRUE)
-  )
-df_patient_agg <- df_patient_agg %>%
-  mutate(DocID = sprintf("doc-%02d", DocID)) 
-
-
-# Imputation
+# Imputation df_eval360
 library(mice)
 df_360 <- df_eval360 %>% select(-Q20)
 qs_to_impute <- paste0("Q", c(1:19, 21:23))
@@ -508,77 +494,37 @@ all(apply(df_360_imputed, c(1,2), function(x) x %% 1 == 0)) # should be T
 df_360_final <- bind_cols(df_eval360 %>% select(DocID, position), df_360_imputed)
 colSums(is.na(df_360_final))
 
+# df1 <- read.csv("~/Case_Study/merged_data_numeric.csv")
+# df2 <- read.csv("~/Case_Study/df_360_final.csv")
+
+# Aggregate 360 scores per physician
 get_mode <- function(x) {
   ux <- unique(x)
   ux[which.max(tabulate(match(x, ux)))]
 }
-
-# STEP 2: Aggregate 360 scores per physician
 df_360_agg <- df_360_final %>%
   group_by(DocID) %>%
   summarize(
     position = get_mode(position),
-    across(starts_with("Q"), mean, na.rm = TRUE),
+    across(2:23, mean, na.rm = TRUE),
     .groups = "drop"
   )
-# Aggregate dataset
-df_cluster_data <- inner_join(df_360_agg, df_patient_agg, by = "DocID")
 
-# Correlation
-cluster_data <- df_cluster_data %>%
-  mutate(
-    Medical_Expert = rowMeans(select(., Q1:Q3), na.rm = TRUE),
-    Advocacy = Q4,
-    Science_Knowledge = Q5,
-    Professionalism = rowMeans(select(., Q6:Q9), na.rm = TRUE),
-    Communication = rowMeans(select(., Q10:Q14), na.rm = TRUE),
-    Collaboration = rowMeans(select(., Q15:Q18), na.rm = TRUE),
-    Management = rowMeans(select(., Q19:Q22), na.rm = TRUE),
-    Overall = Q23
-  )
-feedback_vars <- cluster_data %>%
-  select(Medical_Expert, Advocacy, Science_Knowledge, Professionalism, Communication, Collaboration, Management,
-         avg_los, mortality_rate, avg_sofa, avg_apache)
+library(stringr)
+df_360_agg <- df_360_agg %>%
+  mutate(DocID = as.numeric(str_remove(DocID, "doc-")))
+df.rf <- inner_join(df_join,df_360_agg, by = "DocID")
 
-cor_matrix <- cor(feedback_vars, use = "complete.obs")
-round(cor_matrix, 2)
-
-library(corrplot)
-corrplot(cor_matrix, method = "color", type = "upper", 
-         addCoef.col = "black", tl.col = "black", tl.srt = 45,
-         title = "Correlation Matrix: 360 Domains vs. Patient Outcomes", mar = c(0,0,2,0))
-# lm if need
-
-# K- means Clustering
-library(factoextra)
-fviz_nbclust(scale(feedback_vars), kmeans, method = "wss") +
-  labs(title = "Elbow Method for Optimal k")
-set.seed(1)
-k_result <- kmeans(scale(feedback_vars), centers = 5, nstart = 10)
-
-# Add cluster labels
-cluster_data$cluster <- as.factor(k_result$cluster)
-pca_res <- prcomp(scale(feedback_vars), center = TRUE, scale. = TRUE)
-
-fviz_pca_ind(pca_res,
-             habillage = cluster_data$cluster,
-             # addEllipses = TRUE,
-             label = "none",
-             palette = "jama",
-             title = "PCA of Physician Profiles by Cluster")
-
-cluster_data %>%
-  group_by(cluster) %>%
-  summarize(across(c(Medical_Expert:avg_apache), mean, .names = "mean_{.col}")) %>%
-  pivot_longer(-cluster, names_to = "Variable", values_to = "Mean") %>%
-  ggplot(aes(x = Variable, y = Mean, fill = cluster)) +
-  geom_col(position = position_dodge(width = 0.7), width = 0.6) +
-  coord_flip() +
-  labs(title = "Cluster Profiles: Feedback & Outcomes")
-
-
-# doc-22&23
-cluster_2 <- cluster_data %>% filter(cluster == 2)
+# random forest model to predict mortality        
+library(randomForest)
+rf_model <- randomForest(
+  as.factor(discharge_status) ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q8 + Q9 + Q10 +
+    Q11 + Q12 + Q13 + Q14 + Q15 + Q16 + Q17 + Q18 + Q19 + Q21 + Q22 + Q23,
+  data = df.rf,
+  importance = TRUE,
+  ntree = 500
+)
+varImpPlot(rf_model)
 
 
 
