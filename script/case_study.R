@@ -405,7 +405,7 @@ km_fit_charlson <- survfit(Surv(ICU_total_stay, discharge_status) ~ charlson_sco
 
 #discharge status 0=alive 1=dead
 #fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
-log_model<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role,data=df_exploratory,family=binomial)
+log_model<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+physician_age,data=df_exploratory,family=binomial)
 
 #summary of model
 summary(log_model)
@@ -420,17 +420,6 @@ lr_model<-data.frame(Odds_Ratio = round(exp(coefs_lr),4),
                      Upper_CI=round(exp(upper_lr),4))
 #display odds ratios and CI
 lr_model
-
-# Gastro intestinal patients had 2.55 times higher odds of death compared to cardiovascular patients. Neuro has 2.47 times higher odds of death compared to cardiovascular patients. Respiratory primary diagnosis has the highest odds of death comparing other diagnosis. Trauma patients have a 1.7 times higher odds of death vs cardiovascular. 
-# Patients with a rapid response needed at admission had 48% higher odds of death compared to patients with no rapid response needed. 
-# ICU Neuro department had not statistically significant odds of death, suggesting that the neuro and medical icu have similar odds of death. Surgical had the highest odds of death (1.52 times) compared to the medical icu. ICU trauma patients also had an increase in odds of death compared to medical.
-# 
-# Patients older than 60 had a16% higher odds of death compared to those < 60.
-# An increase in SOFA score by 1 point at admission increases odds of death by 11%. An increase in APACHE II score by 1 point increases the odds of death by 19%. The Charlson score increase reduced odds of death by 0.13. Female patients have 1.11 times higher odds of death.
-# Patients under physicians with a leadership role have 61% lower odds of death
-
-
-
 
 
 #how well model discriminates between patients that are alive (=0) or dead (=1)
@@ -447,16 +436,13 @@ auc(roc_lr)
 #checking multicollinearity in logistic model
 library(car)
 vif(log_model)
-#all VIFs are well below 5, so no concerns of multicollinearity
+#all VIFs are below 5, so no concerns of multicollinearity
 
-#icu_dept:physician_rank yes
-#icu_dept:pri_diag yes
-#patient_age:SOFA_admission no
-#patient_sex:physician_sex
-#senior physicians perform differently in different ICU environments (e.g., Surgical vs Medical ICUs)
+
 #discharge status 0=alive 1=dead
 #fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
-log_model2<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+icu_dept:physician_rank,data=df_exploratory,family=binomial)
+
+log_model2<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+physician_age+physician_rank:patient_age+leadership_role:admission_response,data=df_exploratory,family=binomial)
 
 #summary of model
 summary(log_model2)
@@ -467,18 +453,26 @@ se_lr2<-summary(log_model2)$coefficients[,'Std. Error']
 lower_lr2<-coefs_lr2-1.96*se_lr2
 upper_lr2<-coefs_lr2+1.96*se_lr2
 lr_model2<-data.frame(Odds_Ratio = round(exp(coefs_lr2),4),
-                      Lower_CI=round(exp(lower_lr2),4), 
-                      Upper_CI=round(exp(upper_lr2),4))
+                     Lower_CI=round(exp(lower_lr2),4), 
+                     Upper_CI=round(exp(upper_lr2),4))
 #display odds ratios and CI
 lr_model2
 
 anova(log_model, log_model2, test = "Chisq")
 
 
-#no clear difference in patient odds of death between senior and junior physicians in the Neuro ICU relative to the medical ICU
-# patients in the surgical ICU treated by senior physicians had 24% lower odds of death compared to those treated 
-# by junior physicians relative to the medical ICU
-# patients in the trauma icu treated by senior physicians had 42% lower odds of death than those treated by junior physicians relative to the medical ICU
+#prediction
+pred_lr<-predict(log_model2, type = "response")
+#roc and plot it
+roc_lr<-roc(df_exploratory$discharge_status,pred_lr)
+plot(roc_lr, main="ROC Curve",col="black")
+#display auc val
+auc(roc_lr)
+#AUC value of 0.70+ so we have good discrimination
+
+#checking multicollinearity in logistic model
+vif(log_model2)
+#all VIFs are below 5, so no concerns of multicollinearity
 
 
 
