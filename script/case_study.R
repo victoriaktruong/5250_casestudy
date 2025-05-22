@@ -403,9 +403,10 @@ km_fit_charlson <- survfit(Surv(ICU_total_stay, discharge_status) ~ charlson_sco
 # Analysis: rebekah's part - logistic regression
 # -----------------------------------------------------------------------------------------
 
+
 #discharge status 0=alive 1=dead
 #fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
-log_model<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+physician_age,data=df_exploratory,family=binomial)
+log_model<-glm(discharge_status~admission_response+patient_age+leadership_role+physician_rank,data=df_exploratory,family=binomial)
 
 #summary of model
 summary(log_model)
@@ -442,7 +443,7 @@ vif(log_model)
 #discharge status 0=alive 1=dead
 #fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
 
-log_model2<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+physician_age+physician_rank:patient_age+leadership_role:admission_response,data=df_exploratory,family=binomial)
+log_model2<-glm(discharge_status~admission_response+patient_age+leadership_role+physician_rank+physician_rank:patient_age+leadership_role:admission_response,data=df_exploratory,family=binomial)
 
 #summary of model
 summary(log_model2)
@@ -452,9 +453,9 @@ coefs_lr2<-coef(log_model2)
 se_lr2<-summary(log_model2)$coefficients[,'Std. Error']
 lower_lr2<-coefs_lr2-1.96*se_lr2
 upper_lr2<-coefs_lr2+1.96*se_lr2
-lr_model2<-data.frame(Odds_Ratio = round(exp(coefs_lr2),4),
-                     Lower_CI=round(exp(lower_lr2),4), 
-                     Upper_CI=round(exp(upper_lr2),4))
+lr_model2<-data.frame(Odds_Ratio = round(exp(coefs_lr2),2),
+                     Lower_CI=round(exp(lower_lr2),2), 
+                     Upper_CI=round(exp(upper_lr2),2))
 #display odds ratios and CI
 lr_model2
 
