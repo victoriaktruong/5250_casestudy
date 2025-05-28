@@ -169,13 +169,13 @@ df_exploratory$patient_sex <-factor(df_exploratory$patient_sex ,levels=c(0,1),
 df_exploratory$discharge_status<-factor(df_exploratory$discharge_status,levels=c(0,1),                          
                                         labels=c("Alive","Dead"))
 df_exploratory$pri_diag<-factor(df_exploratory$pri_diag,levels=c(1,2,3,4,5),                        
-                                labels=c("Cardivascular","Gastrointestinal","Neuro","Respiratory","Trauma"))
+                                labels=c("Cardiovascular","Gastrointestinal","Neuro","Respiratory","Trauma"))
 df_exploratory$icu_sites<-factor(df_exploratory$icu_sites,levels=c(1,2),                            
                                  labels=c("1","2+"))
 df_exploratory$leadership_role<-factor(df_exploratory$leadership_role,levels=c(0,1),                            
                                        labels=c("No Role","Leadership Role"))
 df_exploratory$physician_rank<-factor(df_exploratory$physician_rank,levels=c(0,1),                              
-                                     labels=c("Junior","Senior"))
+                                      labels=c("Junior","Senior"))
 df_exploratory$physician_sex<-factor(df_exploratory$physician_sex,levels=c(0,1),                                
                                      labels=c("Male","Female"))
 df_exploratory$domain<-factor(df_exploratory$domain,levels=c(1,2,3,4,5,6),                                    
@@ -207,9 +207,9 @@ label(df_exploratory$SOFA_daily)<-"Daily SOFA score"
 
 # Create an exploratory tables using table1
 table1(~ patient_age +  admission_response  + icu_dept+
-        charlson_score   +  apache_score +  SOFA_admission +  patient_sex  +   discharge_status +   
-        ICU_total_stay     +  pri_diag  + icu_sites    +  
-        leadership_role +  physician_rank    +  overall_score   +   resident_rank  +
+         charlson_score   +  apache_score +  SOFA_admission +  patient_sex  +   discharge_status +   
+         ICU_total_stay     +  pri_diag  + icu_sites    +  
+         leadership_role +  physician_rank    +  overall_score   +   resident_rank  +
          physician_sex   +   domain   +   physician_age   + 
          day_of_ICU  + SOFA_daily , data = df_exploratory,caption="Overall Exploratory Data")
 
@@ -226,12 +226,27 @@ table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_dia
 table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status +pri_diag+admission_response| icu_sites, 
        data = df_exploratory, caption="Patient Outcomes by Physician ICU Sites Worked")
 
-table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_diag+admission_response| physician_age, 
+table1(~ ICU_total_stay + SOFA_admission +charlson_score+ domain+ +SOFA_daily + discharge_status+pri_diag+admission_response| physician_age, 
        data = df_exploratory, caption="Patient Outcomes by Physician Age Group")
 
 table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_diag +admission_response| domain, 
        data = df_exploratory, caption="Patient Outcomes by Physician Training Domain")
 
+# table1(~patient_age +  admission_response  + icu_dept+charlson_score   +  apache_score +  SOFA_admission +  patient_sex  +   discharge_status + ICU_total_stay + pri_diag+ SOFA_daily, 
+#        data = df_exploratory, caption="Patient-level Data Summary")
+table1(~patient_age +  admission_response  + icu_dept+charlson_score   +  apache_score +  SOFA_admission, 
+       data = df_exploratory, caption="Patient-level Data Summary")
+
+table1(~ patient_sex  +   discharge_status + ICU_total_stay + pri_diag+ SOFA_daily, 
+       data = df_exploratory, caption="Patient-level Data Summary (cont.)")
+
+# table1(~icu_sites+leadership_role +physician_rank + overall_score + resident_rank +physician_sex +domain + physician_age, 
+#        data = df_exploratory, caption="Physician-level Data Summary")
+
+table1(~icu_sites+leadership_role +physician_rank + overall_score+ resident_rank, 
+       data = df_exploratory, caption="Physician-level Data Summary")
+table1(~ physician_sex +domain + physician_age, 
+       data = df_exploratory, caption="Physician-level Data Summary (cont.)")
 
 ##extra exploratory tables
 # table1(~overall_score | physician_rank, data=df_exploratory, caption="Physician Rank and Overall Score")
@@ -243,7 +258,6 @@ table1(~ ICU_total_stay + SOFA_admission + SOFA_daily + discharge_status+pri_dia
 # plot(df_exploratory$physician_rank,df_exploratory$ICU_total_stay)
 # plot(df_exploratory$physician_rank,df_exploratory$SOFA_admission)
 # plot(df_exploratory$physician_rank,df_exploratory$SOFA_daily)
-
 
 # -----------------------------------------------------------------------------------------
 # Analysis: vincent's part 
@@ -406,7 +420,11 @@ km_fit_charlson <- survfit(Surv(ICU_total_stay, discharge_status) ~ charlson_sco
 
 #discharge status 0=alive 1=dead
 #fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
-log_model<-glm(discharge_status~admission_response+patient_age+leadership_role+physician_rank,data=df_exploratory,family=binomial)
+# log_model<-glm(discharge_status~admission_response+patient_age+leadership_role+physician_rank,data=df_exploratory,family=binomial)
+
+#for presentation
+log_model<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+physician_age,data=df_exploratory,family=binomial)
+
 
 #summary of model
 summary(log_model)
@@ -443,7 +461,12 @@ vif(log_model)
 #discharge status 0=alive 1=dead
 #fit logistic regression to see how predictors like primary diagnosis and physicians domain #influence prob of death
 
-log_model2<-glm(discharge_status~admission_response+patient_age+leadership_role+physician_rank+physician_rank:patient_age+leadership_role:admission_response,data=df_exploratory,family=binomial)
+# #for poster
+# log_model2<-glm(discharge_status~admission_response+patient_age+leadership_role+physician_rank+physician_rank:patient_age+leadership_role:admission_response,data=df_exploratory,family=binomial)
+
+#for presentation
+log_model2<-glm(discharge_status~pri_diag+admission_response+icu_dept+patient_age+SOFA_admission+apache_score+charlson_score+patient_sex+leadership_role+physician_rank+physician_age+physician_rank:patient_age+leadership_role:admission_response,data=df_exploratory,family=binomial)
+
 
 #summary of model
 summary(log_model2)
@@ -474,8 +497,6 @@ auc(roc_lr)
 #checking multicollinearity in logistic model
 vif(log_model2)
 #all VIFs are below 5, so no concerns of multicollinearity
-
-
 
 # -----------------------------------------------------------------------------------------
 # Yu's part : Join df_eval360 & Random Forest 
